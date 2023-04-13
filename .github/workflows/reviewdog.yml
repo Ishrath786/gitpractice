@@ -9,3 +9,11 @@ jobs:
       uses: reviewdog/action-detect-secrets@master
       with:
         reporter: github-pr-review # Change reporter.
+    - name: Block Commit if Sensitive Data Found
+      uses: dessant/lock-threads@v4
+      if: always()
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        label-name: 'Sensitive Data Found'
+        custom-message: 'Commit blocked: sensitive data detected in changes'
+
