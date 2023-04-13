@@ -1,0 +1,2 @@
+# pragma: allowlist nextline secret
+public_key = gX69YO4CvBsVjzAwYxdG
