@@ -1,0 +1,3 @@
+secret_keys: |  # pragma: allowlist secret
+    gX69YO4CvBsVjzAwYxdG
+    yDd30t5+9ez31gKATtj4
