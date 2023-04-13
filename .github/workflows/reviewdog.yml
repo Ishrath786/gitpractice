@@ -9,6 +9,7 @@ jobs:
       uses: reviewdog/action-detect-secrets@master
       with:
         reporter: github-pr-review # Change reporter.
+        fail_on_error: true
     - name: Block Commit if Sensitive Data Found
       uses: dessant/lock-threads@v4
       if: always()
