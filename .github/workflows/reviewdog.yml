@@ -1,5 +1,8 @@
 name: reviewdog
-on: [pull_request]
+on:
+  push:
+    branches:
+      - main
 jobs:
   detect-secrets:
     runs-on: ubuntu-latest
