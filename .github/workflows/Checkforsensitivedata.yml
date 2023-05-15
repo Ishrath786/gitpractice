@@ -17,7 +17,7 @@ jobs:
       run: pip install trufflehog
 
     - name: Scan for sensitive data
-      run: trufflehog . --exclude .git
+      run: trufflehog 
 
     - name: Fail if sensitive data found
       run: |
