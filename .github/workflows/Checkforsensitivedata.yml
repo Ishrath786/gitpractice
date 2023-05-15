@@ -1,7 +1,7 @@
 name: Check for Sensitive Information
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
 
 jobs:
