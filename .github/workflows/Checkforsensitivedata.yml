@@ -1,8 +1,9 @@
 name: Sensitive Data Check
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches:
+      - main
 
 jobs:
   scan-files:
@@ -12,16 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          exclude_files: '*.png,*.jpg'
-          custom_regex: 'my_custom_regex' # Add your own custom regex here
+          python-version: '3.9'
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Scan for sensitive data
+        run: python scan.py
 
       - name: Fail if sensitive data found
         run: |
           if [ -f sensitive-data.json ]; then
-            echo "::error::Sensitive data found in repository."
+            echo "::error::Sensitive data found in pull request. Please remove before merging."
             exit 1
           fi
