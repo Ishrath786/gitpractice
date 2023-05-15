@@ -1,4 +1,4 @@
-name: Check for sensitive data
+name: Block Commits with Sensitive Data
 
 on:
   pull_request:
@@ -6,22 +6,30 @@ on:
       - main
 
 jobs:
-  check:
+  block-commits:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install TruffleHog
-      run: pip install trufflehog
+      - name: Check for sensitive data
+        run: |
+          files=$(git diff --cached --name-only --diff-filter=ACM)
 
-    - name: Scan for sensitive data
-      run: trufflehog 
+          # Define a list of patterns to search for
+          patterns=(
+            "PAT"
+            "password"
+            "access key"
+            "secret key"
+          )
 
-    - name: Fail if sensitive data found
-      run: |
-        if [ "$?" -eq 0 ]; then
-          echo "Error: Sensitive data detected. Please remove it and try again."
-          exit 1
-        fi
+          for pattern in "${patterns[@]}"
+          do
+            # Check if any of the patterns are present in the files
+            if echo "$files" | GREP_COLOR='4;5;37;41' grep --color=always -i "$pattern"
+            then
+              echo "Error: Commit contains sensitive data. Please remove it and try again."
+              exit 1
+            fi
+          done
