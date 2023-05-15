@@ -1,7 +1,7 @@
 name: Check for sensitive data
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
