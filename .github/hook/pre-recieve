@@ -1,0 +1,15 @@
+#!/bin/sh
+
+while read oldrev newrev refname; do
+    # Check if this is a branch or tag push
+    if [[ "$refname" =~ ^refs/(heads|tags)/ ]]; then
+        # Get the list of files being pushed
+        files=$(git diff --name-only $oldrev $newrev)
+
+        # Check if any of the files contain sensitive data
+        if grep -q "sensitive_data" $files; then
+            echo "ERROR: Sensitive data detected in the push."
+            exit 1
+        fi
+    fi
+done
