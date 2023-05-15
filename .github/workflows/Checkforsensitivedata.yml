@@ -1,7 +1,7 @@
 name: Check for sensitive data
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -13,15 +13,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install GitSecrets
-      run: sudo apt-get update && sudo apt-get install git-secrets
+    - name: Install TruffleHog
+      run: pip install trufflehog
 
-    - name: Scan for secrets
-      run: git secrets --scan
+    - name: Scan for sensitive data
+      run: trufflehog . --exclude .git
 
-    - name: Fail if secrets found
+    - name: Fail if sensitive data found
       run: |
         if [ "$?" -eq 0 ]; then
-          echo "Error: Secrets detected. Please remove them and try again."
+          echo "Error: Sensitive data detected. Please remove it and try again."
           exit 1
         fi
