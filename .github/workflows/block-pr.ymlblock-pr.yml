@@ -14,7 +14,7 @@ jobs:
 
       - name: Check for sensitive data
         run: |
-          files=$(git diff --name-only ${{ github.base_ref }}..${{ github.head_ref }})
+          files=$(git diff --name-only ${{ github.base_ref }}..--${{ github.head_ref }})
 
           # Define a list of patterns to search for
           patterns=(
