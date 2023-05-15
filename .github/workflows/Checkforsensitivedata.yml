@@ -19,7 +19,7 @@ jobs:
             '(?i)(api[_-]?key[a-z0-9]*)'  # API key
           )
           
-          files=$(git diff --name-only HEAD..$GITHUB_HEAD_REF)
+          files=$(git diff --name-only HEAD --$GITHUB_HEAD_REF)
           
           for pattern in "${patterns[@]}"
           do
