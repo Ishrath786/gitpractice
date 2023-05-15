@@ -1,34 +1,28 @@
-name: Prevent Merging of Commits with Sensitive Data
+name: Check for Sensitive Information
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  prevent_merge:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check for sensitive data
+      - name: Check for sensitive information
         run: |
-          files=$(git diff --name-only HEAD..$GITHUB_HEAD_REF)
-          
-          # Define a list of patterns to search for
           patterns=(
-            "PAT"
-            "password"
-            "access key"
-            "secret key"
+            "access_key=[A-Za-z0-9_-]+"
+            "secret_key=[A-Za-z0-9_-]+"
+            "password=[A-Za-z0-9_-]+"
+            "private_key=[A-Za-z0-9_-]+"
           )
-          
           for pattern in "${patterns[@]}"
           do
-            # Check if any of the patterns are present in the files
-            if echo "$files" | GREP_COLOR='4;5;37;41' grep --color=always -i "$pattern"
+            if git grep -q -E "$pattern" $(git rev-parse --show-toplevel)
             then
-              echo "Error: Pull request contains sensitive data. Please remove it and try again."
+              echo "Error: Repository contains sensitive information. Please remove it and try again."
               exit 1
             fi
           done
