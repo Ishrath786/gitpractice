@@ -1,34 +1,22 @@
-name: Check for Sensitive Data in Pull Requests
+name: Trivy Scan
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  check_sensitivity:
+  trivy-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Check for Sensitive Data
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Trivy
         run: |
-          # Define the regex patterns to check for
-          patterns=(
-            '\b[Pp]assword\b'
-            '\b[Ss]ecret[Kk]ey\b'
-            '\b[Aa]ccess[Kk]ey\b'
-            '\b[Tt]oken\b'
-          )
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.19.2/trivy_0.19.2_Linux-64bit.deb
+          sudo dpkg -i trivy_0.19.2_Linux-64bit.deb
 
-          # Get the list of changed files in the pull request
-          changed_files=$(git diff --name-only HEAD --${{ github.event.pull_request.head.sha }})
-
-          # Check each file for the presence of sensitive data
-          for file in $changed_files; do
-            for pattern in "${patterns[@]}"; do
-              if grep -q "$pattern" "$file"; then
-                echo "Sensitive data found in file: $file"
-                exit 1
-              fi
-            done
-          done
+      - name: Scan Docker image
+        run: |
+          trivy image --exit-code 1 --severity HIGH,CRITICAL my-image:latest
