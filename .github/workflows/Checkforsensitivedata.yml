@@ -12,8 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Scan for sensitive data
-        uses: rlespinasse/github-scan-action@v3.0.0
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           exclude_files: '*.png,*.jpg'
