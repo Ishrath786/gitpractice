@@ -1,4 +1,4 @@
-name: Block PR with Sensitive Data
+name: Check for sensitive data
 
 on:
   pull_request:
@@ -6,30 +6,22 @@ on:
       - main
 
 jobs:
-  block-pr:
+  check:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Check for sensitive data
-        run: |
-          files=$(git diff --name-only ${{ github.base_ref }}..--${{ github.head_ref }})
+    - name: Install GitSecrets
+      run: sudo apt-get update && sudo apt-get install git-secrets
 
-          # Define a list of patterns to search for
-          patterns=(
-            "PAT"
-            "password"
-            "access key"
-            "secret key"
-          )
+    - name: Scan for secrets
+      run: git secrets --scan
 
-          for pattern in "${patterns[@]}"
-          do
-            # Check if any of the patterns are present in the files
-            if echo "$files" | GREP_COLOR='4;5;37;41' grep --color=always -i "$pattern"
-            then
-              echo "Error: Pull request contains sensitive data. Please remove it and try again."
-              exit 1
-            fi
-          done
+    - name: Fail if secrets found
+      run: |
+        if [ "$?" -eq 0 ]; then
+          echo "Error: Secrets detected. Please remove them and try again."
+          exit 1
+        fi
