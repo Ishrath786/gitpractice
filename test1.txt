@@ -1,5 +1,0 @@
-"1.Basic support activity
-2.Monitoring jenkins jobs
-3. clearing ticket queues
-4. Daw-Automation migration 
-"
